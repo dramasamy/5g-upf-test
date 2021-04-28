@@ -6,16 +6,16 @@ import (
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/sync/errgroup"
+	"log"
 	"net/http"
 	"os"
-	"log"
-	"time"
 	"strconv"
+	"time"
 	// "crypto/tls"
 )
 
 var (
-    g errgroup.Group
+	g errgroup.Group
 )
 
 func fileExists(filename string) bool {
@@ -104,41 +104,41 @@ func main() {
 	var https_listen = flag.String("https_listen", "0.0.0.0:443", "HTTP server port")
 	flag.Parse()
 
-    server80 := &http.Server{
-        Addr:         *http_listen,
-        Handler:      router80(),
-        ReadTimeout:  5 * time.Second,
-        WriteTimeout: 10 * time.Second,
-    }
+	server80 := &http.Server{
+		Addr:         *http_listen,
+		Handler:      router80(),
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+	}
 
-    // cfg := &tls.Config{
-    //     MinVersion:               tls.VersionTLS12,
-    //     CurvePreferences:         []tls.CurveID{tls.CurveP521, tls.CurveP384, tls.CurveP256},
-    //     PreferServerCipherSuites: true,
-    //     CipherSuites: []uint16{
-    //         tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
-    //         tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
-    //         tls.TLS_RSA_WITH_AES_256_GCM_SHA384,
-    //         tls.TLS_RSA_WITH_AES_256_CBC_SHA,
-    //     },
-    // }
+	// cfg := &tls.Config{
+	//     MinVersion:               tls.VersionTLS12,
+	//     CurvePreferences:         []tls.CurveID{tls.CurveP521, tls.CurveP384, tls.CurveP256},
+	//     PreferServerCipherSuites: true,
+	//     CipherSuites: []uint16{
+	//         tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+	//         tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+	//         tls.TLS_RSA_WITH_AES_256_GCM_SHA384,
+	//         tls.TLS_RSA_WITH_AES_256_CBC_SHA,
+	//     },
+	// }
 
-    server443 := &http.Server{
-        Addr:         *https_listen,
-        Handler:      router443(),
-        ReadTimeout:  5 * time.Second,
-        WriteTimeout: 10 * time.Second,
-    }
+	server443 := &http.Server{
+		Addr:         *https_listen,
+		Handler:      router443(),
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+	}
 
-    g.Go(func() error {
-        return server80.ListenAndServe()
-    })
+	g.Go(func() error {
+		return server80.ListenAndServe()
+	})
 
-    g.Go(func() error {
-        return server443.ListenAndServeTLS("./server.crt", "./server.key")
-    })
+	g.Go(func() error {
+		return server443.ListenAndServeTLS("./server.crt", "./server.key")
+	})
 
-    if err := g.Wait(); err != nil {
-        log.Fatal(err)
-    }
+	if err := g.Wait(); err != nil {
+		log.Fatal(err)
+	}
 }
