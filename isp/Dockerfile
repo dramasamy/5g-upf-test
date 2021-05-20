@@ -4,6 +4,8 @@ WORKDIR /build
 COPY . .
 RUN unset GOPATH && go mod tidy
 RUN unset GOPATH && go build server.go
+RUN unset GOPATH && go build quic_client.go
+RUN unset GOPATH && go build quic_server.go
 
 FROM alpine:3.13.5
 RUN mkdir /app
